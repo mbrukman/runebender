@@ -10,6 +10,8 @@ mod guides;
 mod lens2;
 mod menus;
 mod path;
+mod theme;
+mod toolbar;
 pub mod widgets;
 
 use druid::widget::{Align, Column, DynLabel, Padding, Scroll, SizedBox};
@@ -29,6 +31,7 @@ fn main() {
 
     AppLauncher::with_window(main_window)
         .delegate(app_delegate::make_delegate())
+        .configure_env(theme::setup_env)
         .use_simple_logger()
         .launch(state)
         .expect("launch failed");
