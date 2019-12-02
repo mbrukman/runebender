@@ -12,6 +12,7 @@ use druid::{
 use crate::app_delegate::EDIT_GLYPH;
 use crate::data::{lenses, GlyphPlus, GlyphSet};
 use crate::lens2::Lens2Wrap;
+use crate::placeholders;
 
 pub struct GlyphGrid {
     children: Vec<WidgetPod<GlyphSet, Lens2Wrap<GlyphPlus, lenses::glyph_set::Glyph, GridInner>>>,
@@ -87,6 +88,7 @@ impl Widget<GlyphSet> for GlyphGrid {
                     lenses::glyph_set::Glyph(key),
                 )));
             }
+            log::info!("updating, now {} children", self.children.len());
         }
         ctx.invalidate();
     }
@@ -108,7 +110,10 @@ struct GridInner {
 impl Widget<GlyphPlus> for GridInner {
     fn paint(&mut self, ctx: &mut PaintCtx, state: &BaseState, data: &GlyphPlus, env: &Env) {
         //TODO: replacement for missing glyphs
-        let path = data.get_bezier().unwrap_or_default();
+        let path = data
+            .get_bezier()
+            .or_else(|| placeholders::placeholder_for_glyph(&data.glyph.name))
+            .unwrap_or_default();
         let bb = path.bounding_box();
         let geom = Rect::ZERO.with_size(state.size());
         let scale = geom.height() as f64 / self.units_per_em;

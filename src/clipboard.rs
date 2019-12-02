@@ -25,11 +25,11 @@ pub fn make_code_string(session: &EditSession) -> Option<String> {
         let mut bezier = path.bezier();
 
         // glyphs are y-up, but piet generally expects y-down, so we flipy that
-        bezier.apply_affine(Affine::FLIP_Y);
+        //bezier.apply_affine(Affine::FLIP_Y);
 
         // and then we set our origin to be equal the origin of our bounding box
-        let bbox = bezier.bounding_box();
-        bezier.apply_affine(Affine::translate(-bbox.origin().to_vec2()));
+        //let bbox = bezier.bounding_box();
+        //bezier.apply_affine(Affine::translate(-bbox.origin().to_vec2()));
 
         if let Err(e) = append_path(&bezier, &mut out) {
             log::error!("error generating code string: '{}'", e);

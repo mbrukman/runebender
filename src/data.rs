@@ -128,7 +128,7 @@ pub fn get_bezier(name: &str, ufo: &Ufo, resolved: Option<&BezCache>) -> Option<
     }
 
     let glyph = ufo.get_glyph(name)?;
-    let mut path = path_for_glyph(glyph);
+    let mut path = path_for_glyph(glyph)?;
     for comp in glyph
         .outline
         .as_ref()
@@ -346,7 +346,7 @@ pub mod lenses {
 
 /// Convert this glyph's path from the UFO representation into a `kurbo::BezPath`
 /// (which we know how to draw.)
-pub fn path_for_glyph(glyph: &Glyph) -> BezPath {
+pub fn path_for_glyph(glyph: &Glyph) -> Option<BezPath> {
     /// An outline can have multiple contours, which correspond to subpaths
     fn add_contour(path: &mut BezPath, contour: &Contour) {
         let mut close: Option<&ContourPoint> = None;
@@ -398,12 +398,14 @@ pub fn path_for_glyph(glyph: &Glyph) -> BezPath {
         }
     }
 
-    let mut path = BezPath::new();
     if let Some(outline) = glyph.outline.as_ref() {
+        let mut path = BezPath::new();
         outline
             .contours
             .iter()
             .for_each(|c| add_contour(&mut path, c));
+        Some(path)
+    } else {
+        None
     }
-    path
 }
